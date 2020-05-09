@@ -1,3 +1,5 @@
+# Will Turner 2020
+
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 commonWords = open('WordLists/common.txt', 'r').readlines()
@@ -7,313 +9,335 @@ manyWords = open('WordLists/morewords.txt', 'r').readlines()
 manyWords = [manyWords[x][0:len(manyWords[x]) - 1].replace(" ", "").upper() for x in range(len(manyWords) - 1)]
 
 
-class Transposition:
-    def transpose(plain, key, junk):
-        ciphertext = [''] * key
-        for col in range(key):
-            pointer = col
-            while pointer < len(plain):
-                ciphertext[col] += plain[pointer]
-                pointer += key
-        return ''.join(ciphertext)
+def decode(cipher, key):
+    """
+    Decode a transposition-encyphered string
 
-    def decryptTranspose(cipher, key):
+    :param str cipher: The string to be decoded
+    :param int key: The number of columns used to encode
+    :return: The decoded string
+    """
+    return decryptTranspose(cipher, key)
 
-        if (not len(cipher) % key == 0):
-            if (key - (len(cipher) % key) == 1):
-                cipher += 'X'
-            else:
-                num = key - (len(cipher) % key)
-                for i in range(num):
-                    temp = list(cipher)
-                    p = len(cipher) - (((len(cipher) // key) + 1) * i)
-                    temp = temp[0:p] + ['X'] + temp[p:]
-                    cipher = ''.join(temp)
-            # print(cipher)
 
-        leng = len(cipher)
-        matrix = [] * key
-        for i in range(leng // key):
-            matrix.append([''] * key)
-        cipherList = list(cipher)
+def encode(plain, key):
+    """
+    Encode a string using a transposition cipher
 
-        count = 0
+    :param str plain: The plaintext to be encoded
+    :param int key: The number of columns used to encode
+    :return: The encoded string
+    """
+    return transpose(plain, key)
 
-        for i in range(key):
-            for l in range(leng // key):
-                matrix[l][i] = cipherList[count]
-                count += 1
-        output = ""
-        for item in matrix:
-            # print(item)
-            for l in item:
-                output += l
 
-        return output
+def transpose(plain, key):
+    ciphertext = [''] * key
+    for col in range(key):
+        pointer = col
+        while pointer < len(plain):
+            ciphertext[col] += plain[pointer]
+            pointer += key
+    return ''.join(ciphertext)
 
-    def keyWord(cipher, word):
 
-        key = len(word)
-        if (not len(cipher) % key == 0):
-            if (key - (len(cipher) % key) == 1):
-                cipher += 'X'
-            else:
-                num = key - (len(cipher) % key)
-                for i in range(num):
-                    temp = list(cipher)
-                    p = len(cipher) - (((len(cipher) // key) + 1) * i)
-                    temp = temp[0:p] + ['X'] + temp[p:]
-                    cipher = ''.join(temp)
-            # print(cipher)
+def decryptTranspose(cipher, key):
 
-        leng = len(cipher)
-        matrix = [] * key
-        for i in range(leng // key):
-            matrix.append([''] * key)
-        cipherList = list(cipher)
+    if (not len(cipher) % key == 0):
+        if (key - (len(cipher) % key) == 1):
+            cipher += 'X'
+        else:
+            num = key - (len(cipher) % key)
+            for i in range(num):
+                temp = list(cipher)
+                p = len(cipher) - (((len(cipher) // key) + 1) * i)
+                temp = temp[0:p] + ['X'] + temp[p:]
+                cipher = ''.join(temp)
+        # print(cipher)
 
-        count = 0
+    leng = len(cipher)
+    matrix = [] * key
+    for i in range(leng // key):
+        matrix.append([''] * key)
+    cipherList = list(cipher)
 
-        for i in range(key):
-            for l in range(leng // key):
-                matrix[l][i] = cipherList[count]
-                count += 1
-        # print(list(word))
-        # for item in matrix:
+    count = 0
+
+    for i in range(key):
+        for l in range(leng // key):
+            matrix[l][i] = cipherList[count]
+            count += 1
+    output = ""
+    for item in matrix:
         # print(item)
+        for l in item:
+            output += l
 
-        word = list(word)
-        og = list(word)
-        # print("\n")
-        for i in range(10):
-            for l in range(len(word) - 1):
-                if (word[l] > word[l + 1]):
-                    word[l], word[l + 1] = word[l + 1], word[l]
-        # print(word)
+    return output
 
-        word = list(word)
-        # print("\n")
-        for i in range(10):
-            for l in range(len(word) - 1):
-                if (og.index(word[l]) > og.index(word[l + 1])):
-                    word[l], word[l + 1] = word[l + 1], word[l]
-                    for i in range(len(matrix)):
-                        Transposition.switch(matrix[i], l, l + 1)
+def keyWord(cipher, word):
 
-        # print(word)
+    key = len(word)
+    if (not len(cipher) % key == 0):
+        if (key - (len(cipher) % key) == 1):
+            cipher += 'X'
+        else:
+            num = key - (len(cipher) % key)
+            for i in range(num):
+                temp = list(cipher)
+                p = len(cipher) - (((len(cipher) // key) + 1) * i)
+                temp = temp[0:p] + ['X'] + temp[p:]
+                cipher = ''.join(temp)
+        # print(cipher)
+
+    leng = len(cipher)
+    matrix = [] * key
+    for i in range(leng // key):
+        matrix.append([''] * key)
+    cipherList = list(cipher)
+
+    count = 0
+
+    for i in range(key):
+        for l in range(leng // key):
+            matrix[l][i] = cipherList[count]
+            count += 1
+    # print(list(word))
+    # for item in matrix:
+    # print(item)
+
+    word = list(word)
+    og = list(word)
+    # print("\n")
+    for i in range(10):
+        for l in range(len(word) - 1):
+            if (word[l] > word[l + 1]):
+                word[l], word[l + 1] = word[l + 1], word[l]
+    # print(word)
+
+    word = list(word)
+    # print("\n")
+    for i in range(10):
+        for l in range(len(word) - 1):
+            if (og.index(word[l]) > og.index(word[l + 1])):
+                word[l], word[l + 1] = word[l + 1], word[l]
+                for i in range(len(matrix)):
+                    switch(matrix[i], l, l + 1)
+
+    # print(word)
+    output = ""
+    for item in matrix:
+        # print(item)
+        for l in item:
+            output += l
+
+    return output
+
+def switchRow(l, a, b):
+    for i in range(len(l)):
+        switch(l[i], int(a), int(b))
+    return l
+
+def decodeUnkownWord(cipher, keyLength):
+    key = keyLength
+    if (not len(cipher) % key == 0):
+        if (key - (len(cipher) % key) == 1):
+            cipher += 'X'
+        else:
+            num = key - (len(cipher) % key)
+            for i in range(num):
+                temp = list(cipher)
+                p = len(cipher) - (((len(cipher) // key) + 1) * i)
+                temp = temp[0:p] + ['X'] + temp[p:]
+                cipher = ''.join(temp)
+        print(cipher)
+
+    leng = len(cipher)
+    matrix = [] * key
+    for i in range(leng // key):
+        matrix.append([''] * key)
+    cipherList = list(cipher)
+
+    count = 0
+
+    for i in range(key):
+        for l in range(leng // key):
+            matrix[l][i] = cipherList[count]
+            count += 1
+    for item in matrix:
+        print(item)
+
+    while (True):
+        a = input()
+        b = input()
+        switchRow(matrix, a, b)
+        numThing = [str(0), str(1), str(2), str(3), str(4), str(5), str(6), str(7), str(8), str(9), str(10),
+                    str(11)]
+        print(numThing)
         output = ""
-        for item in matrix:
-            # print(item)
-            for l in item:
-                output += l
-
-        return output
-
-    def switchRow(l, a, b):
-        for i in range(len(l)):
-            Transposition.switch(l[i], int(a), int(b))
-        return l
-
-    def decodeUnkownWord(cipher, keyLength):
-        key = keyLength
-        if (not len(cipher) % key == 0):
-            if (key - (len(cipher) % key) == 1):
-                cipher += 'X'
-            else:
-                num = key - (len(cipher) % key)
-                for i in range(num):
-                    temp = list(cipher)
-                    p = len(cipher) - (((len(cipher) // key) + 1) * i)
-                    temp = temp[0:p] + ['X'] + temp[p:]
-                    cipher = ''.join(temp)
-            print(cipher)
-
-        leng = len(cipher)
-        matrix = [] * key
-        for i in range(leng // key):
-            matrix.append([''] * key)
-        cipherList = list(cipher)
-
-        count = 0
-
-        for i in range(key):
-            for l in range(leng // key):
-                matrix[l][i] = cipherList[count]
-                count += 1
         for item in matrix:
             print(item)
+            for l in item:
+                output += l
 
-        while (True):
-            a = input()
-            b = input()
-            Transposition.switchRow(matrix, a, b)
-            numThing = [str(0), str(1), str(2), str(3), str(4), str(5), str(6), str(7), str(8), str(9), str(10),
-                        str(11)]
-            print(numThing)
-            output = ""
-            for item in matrix:
-                print(item)
-                for l in item:
-                    output += l
+        print(output)
 
-            print(output)
-
-    def spamCaesar(cipher):
-        count = 0
-        for i in manyWords:
-            c = 0
-            s = Transposition.keyWord(cipher, i)
-            for z in range(1, 27):
-                l = Transposition.caesar_shift_decode(s, z, ALPHABET)
-                con = "BCDFGHJKLMNPQRSTVWXYZ"
-                if (not (l[0] in con and l[1] in con and l[2] in con) and (
-                        l[len(l) - 1] == 'X' and l[len(l) - 2] == 'X')):
-                    for m in commonWords:
-                        if m in l:
-                            c = c + 1
-                            if (c > 1):
-                                print(str(i) + " - " + str(z) + ": " + l + "\n")
-                                count = count + 1
-                                break
-        print(str(len(manyWords)) + " words tested. " + str(count) + " hits.")
-
-    def spam(cipher):
-        count = 0
-        for i in manyWords:
-            c = 0
-            l = Transposition.keyWord(cipher, i)
+def spamCaesar(cipher):
+    count = 0
+    for i in manyWords:
+        c = 0
+        s = keyWord(cipher, i)
+        for z in range(1, 27):
+            l = caesar_shift_decode(s, z, ALPHABET)
             con = "BCDFGHJKLMNPQRSTVWXYZ"
-            if (not (l[0] in con and l[1] in con and l[2] in con) and (l[len(l) - 1] == 'X' and l[len(l) - 2] == 'X')):
+            if (not (l[0] in con and l[1] in con and l[2] in con) and (
+                    l[len(l) - 1] == 'X' and l[len(l) - 2] == 'X')):
                 for m in commonWords:
-                    if m in l and len(i) == 5:
+                    if m in l:
                         c = c + 1
-                        if (c > -1):
-                            print(str(i) + ": " + l + "\n")
+                        if (c > 1):
+                            print(str(i) + " - " + str(z) + ": " + l + "\n")
                             count = count + 1
                             break
-            if (len(i) == 5 and list(l)[0] == "A"):
-                print(str(i) + ": " + l + "\n")
-        print(str(len(manyWords)) + " words tested. " + str(count) + " hits.")
+    print(str(len(manyWords)) + " words tested. " + str(count) + " hits.")
 
-    def decodeUnkownWordUnfilled(cipher, keyLength):
-        # cipher = Transposition.caesar_shift_decode(cipher, 14, ALPHABET)
-        key = keyLength
-        ogC = cipher
-        if (not len(cipher) % key == 0):
-            if (key - (len(cipher) % key) == 1):
-                cipher += 'X'
-            else:
-                num = key - (len(cipher) % key)
-                for i in range(num):
-                    temp = list(cipher)
-                    p = len(cipher) - (((len(cipher) // key) + 1) * i)
-                    temp = temp[0:p] + ['X'] + temp[p:]
-                    cipher = ''.join(temp)
-            print(cipher)
+def spam(cipher):
+    count = 0
+    for i in manyWords:
+        c = 0
+        l = keyWord(cipher, i)
+        con = "BCDFGHJKLMNPQRSTVWXYZ"
+        if (not (l[0] in con and l[1] in con and l[2] in con) and (l[len(l) - 1] == 'X' and l[len(l) - 2] == 'X')):
+            for m in commonWords:
+                if m in l and len(i) == 5:
+                    c = c + 1
+                    if (c > -1):
+                        print(str(i) + ": " + l + "\n")
+                        count = count + 1
+                        break
+        if (len(i) == 5 and list(l)[0] == "A"):
+            print(str(i) + ": " + l + "\n")
+    print(str(len(manyWords)) + " words tested. " + str(count) + " hits.")
 
-        leng = len(cipher)
-        matrix = [] * key
-        for i in range(leng // key):
-            matrix.append([''] * key)
-        cipherList = list(cipher)
+def decodeUnkownWordUnfilled(cipher, keyLength):
+    # cipher = caesar_shift_decode(cipher, 14, ALPHABET)
+    key = keyLength
+    ogC = cipher
+    if (not len(cipher) % key == 0):
+        if (key - (len(cipher) % key) == 1):
+            cipher += 'X'
+        else:
+            num = key - (len(cipher) % key)
+            for i in range(num):
+                temp = list(cipher)
+                p = len(cipher) - (((len(cipher) // key) + 1) * i)
+                temp = temp[0:p] + ['X'] + temp[p:]
+                cipher = ''.join(temp)
+        print(cipher)
 
-        count = 0
+    leng = len(cipher)
+    matrix = [] * key
+    for i in range(leng // key):
+        matrix.append([''] * key)
+    cipherList = list(cipher)
 
-        for i in range(key):
-            for l in range(leng // key):
-                matrix[l][i] = cipherList[count]
-                count += 1
+    count = 0
+
+    for i in range(key):
+        for l in range(leng // key):
+            matrix[l][i] = cipherList[count]
+            count += 1
+    for item in matrix:
+        print(item)
+
+    while (True):
+        a = input()
+        b = input()
+        switchRow(matrix, a, b)
+        numThing = [str(0), str(1), str(2), str(3), str(4), str(5), str(6), str(7), str(8), str(9), str(10),
+                    str(11)]
+
+        io = ""
+        for l in range(len(matrix[0])):
+            for i in range(len(matrix)):
+                io += matrix[i][l]
+
+        output = ""
+        for item in matrix:
+            for l in item:
+                output += l
+        output = output.replace("X", '')
+        print(output)
+        output = addX(io, keyLength)
+        matrix = makeMatrix(output, keyLength)
+
+        print(numThing)
         for item in matrix:
             print(item)
+        print(output)
 
-        while (True):
-            a = input()
-            b = input()
-            Transposition.switchRow(matrix, a, b)
-            numThing = [str(0), str(1), str(2), str(3), str(4), str(5), str(6), str(7), str(8), str(9), str(10),
-                        str(11)]
+def addX(cipher, key):
+    if (not len(cipher) % key == 0):
+        if (key - (len(cipher) % key) == 1):
+            cipher += 'X'
+        else:
+            num = key - (len(cipher) % key)
+            for i in range(num):
+                temp = list(cipher)
+                p = len(cipher) - (((len(cipher) // key) + 1) * i)
+                temp = temp[0:p] + ['X'] + temp[p:]
+                cipher = ''.join(temp)
+    return cipher
 
-            io = ""
-            for l in range(len(matrix[0])):
-                for i in range(len(matrix)):
-                    io += matrix[i][l]
+def makeMatrix(cipher, key):
+    leng = len(cipher)
+    matrix = [] * key
+    for i in range(leng // key):
+        matrix.append([''] * key)
+    cipherList = list(cipher)
 
-            output = ""
-            for item in matrix:
-                for l in item:
-                    output += l
-            output = output.replace("X", '')
-            print(output)
-            output = Transposition.addX(io, keyLength)
-            matrix = Transposition.makeMatrix(output, keyLength)
+    count = 0
 
-            print(numThing)
-            for item in matrix:
-                print(item)
-            print(output)
+    for i in range(key):
+        for l in range(leng // key):
+            matrix[l][i] = cipherList[count]
+            count += 1
+    return matrix
 
-    def addX(cipher, key):
-        if (not len(cipher) % key == 0):
-            if (key - (len(cipher) % key) == 1):
-                cipher += 'X'
-            else:
-                num = key - (len(cipher) % key)
-                for i in range(num):
-                    temp = list(cipher)
-                    p = len(cipher) - (((len(cipher) // key) + 1) * i)
-                    temp = temp[0:p] + ['X'] + temp[p:]
-                    cipher = ''.join(temp)
-        return cipher
+def switch(l, a, b):
+    temp = l[a]
+    l[a] = l[b]
+    l[b] = temp
 
-    def makeMatrix(cipher, key):
-        leng = len(cipher)
-        matrix = [] * key
-        for i in range(leng // key):
-            matrix.append([''] * key)
-        cipherList = list(cipher)
+def decodeUnkownColumns(cipher):
+    x = 2
+    while (True):
+        print(x, decryptTranspose(cipher, x))
+        x += 1
+        t = input()
 
-        count = 0
+def caesar_shift_decode(p, s, a):
+    result = ""
+    a1 = a.upper()
+    a2 = a.lower()
+    for i in range(len(p)):
+        char = p[i]
+        if (char in a1):
+            result += i2c((c2i(char, a1) - s) % len(a1), a1)
+        elif (char in a2):
+            result += i2c((c2i(char, a2) - s) % len(a2), a2)
+        else:
+            result += char
+    return result
 
-        for i in range(key):
-            for l in range(leng // key):
-                matrix[l][i] = cipherList[count]
-                count += 1
-        return matrix
+def c2i(c, alphabet):
+    return alphabet.index(c)
 
-    def switch(l, a, b):
-        temp = l[a]
-        l[a] = l[b]
-        l[b] = temp
-
-    def decodeUnkownColumns(cipher):
-        x = 2
-        while (True):
-            print(x, Transposition.decryptTranspose(cipher, x))
-            x += 1
-            t = input()
-
-    def caesar_shift_decode(p, s, a):
-        result = ""
-        a1 = a.upper()
-        a2 = a.lower()
-        for i in range(len(p)):
-            char = p[i]
-            if (char in a1):
-                result += Transposition.i2c((Transposition.c2i(char, a1) - s) % len(a1), a1)
-            elif (char in a2):
-                result += Transposition.i2c((Transposition.c2i(char, a2) - s) % len(a2), a2)
-            else:
-                result += char
-        return result
-
-    def c2i(c, alphabet):
-        return alphabet.index(c)
-
-    def i2c(i, alphabet):
-        return list(alphabet)[i]
+def i2c(i, alphabet):
+    return list(alphabet)[i]
 
 
 cipherText = "UCIERCTTMITENOAOIOOKDIRCOGEVJRAIESONZCTTISNEAAOFBSTSAZHNNBRNMCMSOHBHFALOULZGROSEIHSSNPWXEHCYIAOEPLNLGRZSTTLYET"
 
-# Transposition.decodeUnkownWordUnfilled(cipherText, 5)
-#Transposition.spam(cipherText)
+# decodeUnkownWordUnfilled(cipherText, 5)
+#spam(cipherText)

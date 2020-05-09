@@ -1,225 +1,227 @@
+# Will Turner 2020
+
 import re
 import random
 
 
-class ADFGVX:
 
-    def ADFGVX_encode(matrixString, keyword, plaintext):
 
-        ran = input("Random matrix? (y/n)")
-        if (ran == "y" or ran == "Y"):
-            matrixString = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
-            random.shuffle(matrixString)
-            matrixString = "".join(matrixString)
+def encode(matrixString, keyword, plaintext):
 
-        alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-        if (not len(matrixString) == 36):
-            return "ERROR: Matrix not 36 characters"
-        for item in list(alpha):
-            if (not item in matrixString):
-                return "ERROR: Matrix missing letter '" + item + "'"
+    ran = input("Random matrix? (y/n)")
+    if (ran == "y" or ran == "Y"):
+        matrixString = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+        random.shuffle(matrixString)
+        matrixString = "".join(matrixString)
 
-        p = ADFGVX.prepare_string(plaintext)
-        matrixString = list(matrixString)
-        ct = ""
-        matrix = [''] * 6
+    alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+    if (not len(matrixString) == 36):
+        return "ERROR: Matrix not 36 characters"
+    for item in list(alpha):
+        if (not item in matrixString):
+            return "ERROR: Matrix missing letter '" + item + "'"
 
-        for i in range(6):
-            matrix[i] = matrixString[i * 6:i * 6 + 6]
+    p = prepare_string(plaintext)
+    matrixString = list(matrixString)
+    ct = ""
+    matrix = [''] * 6
 
-        print("ADFGVX matrix:")
-        for item in matrix:
-            print(item)
+    for i in range(6):
+        matrix[i] = matrixString[i * 6:i * 6 + 6]
 
-        for item in list(p):
-            for i in range(len(matrix)):
-                if item in matrix[i]:
-                    column = matrix[i].index(item)
-                    row = i
-            ct += list("ADFGVX")[row]
-            ct += list("ADFGVX")[column]
+    print("ADFGVX matrix:")
+    for item in matrix:
+        print(item)
 
-        # print("Transposing")
-        ct = ADFGVX.transposeEncode(ct, keyword)
-        ctList = [ct[i:i + 2] for i in range(0, len(ct), 2)]
-
-        ct = ""
-        for i in ctList:
-            ct += i
-            ct += " "
-
-        print("Morse:")
-        print(ADFGVX.toMorseCode(ct))
-        print("UnMorse Coded:")
-        print(ADFGVX.unMorseCode(ADFGVX.toMorseCode(ct)))
-        return ct
-
-    def prepare_string(s):
-        s = re.sub(r'[^\w\s]', "", s)
-        s = re.sub(re.compile(r'\s+'), '', s)
-        return s.upper()
-
-    def transposeEncode(string, keyword):
-
-        ct = ""
-        numColumns = len(keyword)
-        matrix = [''] * numColumns
-        numRows = len(string) // numColumns
-        if (not len(string) % numColumns == 0):
-            numRows += 1
-
+    for item in list(p):
         for i in range(len(matrix)):
-            matrix[i] = [''] * numRows
+            if item in matrix[i]:
+                column = matrix[i].index(item)
+                row = i
+        ct += list("ADFGVX")[row]
+        ct += list("ADFGVX")[column]
 
-        row = 0
-        col = 0
-        for item in list(string):
-            matrix[row][col] = item
-            row += 1
-            if (row >= numRows):
-                row = 0
-                col += 1
+    # print("Transposing")
+    ct = transposeEncode(ct, keyword)
+    ctList = [ct[i:i + 2] for i in range(0, len(ct), 2)]
 
-        ak = list(keyword)
-        ak.sort()
+    ct = ""
+    for i in ctList:
+        ct += i
+        ct += " "
 
-        for item in ak:
-            ct += "".join(matrix[list(keyword).index(item)])
+    print("Morse:")
+    print(toMorseCode(ct))
+    print("UnMorse Coded:")
+    print(unMorseCode(toMorseCode(ct)))
+    return ct
 
-        # print("Transposition matrix:")
-        # for item in matrix:
-        #  print (item)
+def prepare_string(s):
+    s = re.sub(r'[^\w\s]', "", s)
+    s = re.sub(re.compile(r'\s+'), '', s)
+    return s.upper()
 
-        return ct
+def transposeEncode(string, keyword):
 
-    def transposeDecode(cipher, word):
-        key = len(word)
+    ct = ""
+    numColumns = len(keyword)
+    matrix = [''] * numColumns
+    numRows = len(string) // numColumns
+    if (not len(string) % numColumns == 0):
+        numRows += 1
 
-        numBlanks = len(word) - (len(cipher) % len(word))
+    for i in range(len(matrix)):
+        matrix[i] = [''] * numRows
 
-        leng = len(cipher)
-        matrix = [] * key
-        for i in range(leng // key + 1):
-            matrix.append([''] * key)
+    row = 0
+    col = 0
+    for item in list(string):
+        matrix[row][col] = item
+        row += 1
+        if (row >= numRows):
+            row = 0
+            col += 1
 
-        sWord = list(word)
-        sWord.sort()
-        for i in range(numBlanks):
-            matrix[len(matrix) - 1][word.index(sWord[len(sWord) - i - 1])] = ":"
+    ak = list(keyword)
+    ak.sort()
 
-        cipherList = list(cipher)
+    for item in ak:
+        ct += "".join(matrix[list(keyword).index(item)])
 
-        count = 0
-        print(cipher)
-        for i in range(key):
-            for l in range(leng // key + 1):
-                if (matrix[l][i] != ":"):
-                    matrix[l][i] = cipherList[count]
-                    count += 1
-        # for item in matrix:
-        # print(item)
+    # print("Transposition matrix:")
+    # for item in matrix:
+    #  print (item)
 
-        word = list(word)
-        og = list(word)
-        for i in range(10):
-            for l in range(len(word) - 1):
-                if (word[l] > word[l + 1]):
-                    word[l], word[l + 1] = word[l + 1], word[l]
+    return ct
 
-        word = list(word)
-        for i in range(10):
-            for l in range(len(word) - 1):
-                if (og.index(word[l]) > og.index(word[l + 1])):
-                    word[l], word[l + 1] = word[l + 1], word[l]
-                    for i in range(len(matrix)):
-                        ADFGVX.switch(matrix[i], l, l + 1)
+def transposeDecode(cipher, word):
+    key = len(word)
 
-        output = ""
-        for item in matrix:
-            for l in item:
-                output += l
+    numBlanks = len(word) - (len(cipher) % len(word))
 
-        return output.replace(":", "")
+    leng = len(cipher)
+    matrix = [] * key
+    for i in range(leng // key + 1):
+        matrix.append([''] * key)
 
-    def switchRow(l, a, b):
-        for i in range(len(l)):
-            ADFGVX.switch(l[i], int(a), int(b))
-        return l
+    sWord = list(word)
+    sWord.sort()
+    for i in range(numBlanks):
+        matrix[len(matrix) - 1][word.index(sWord[len(sWord) - i - 1])] = ":"
 
-    def switch(l, a, b):
-        temp = l[a]
-        l[a] = l[b]
-        l[b] = temp
+    cipherList = list(cipher)
 
-    def decode(matrixString, keyword, ciphertext):
+    count = 0
+    print(cipher)
+    for i in range(key):
+        for l in range(leng // key + 1):
+            if (matrix[l][i] != ":"):
+                matrix[l][i] = cipherList[count]
+                count += 1
+    # for item in matrix:
+    # print(item)
 
-        alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-        if (not len(matrixString) == 36):
-            return "ERROR: Matrix not 36 characters"
-        for item in list(alpha):
-            if (not item in matrixString):
-                return "ERROR: Matrix missing letter '" + item + "'"
+    word = list(word)
+    og = list(word)
+    for i in range(10):
+        for l in range(len(word) - 1):
+            if (word[l] > word[l + 1]):
+                word[l], word[l + 1] = word[l + 1], word[l]
 
-        ciphertext = ADFGVX.prepare_string(ciphertext)
+    word = list(word)
+    for i in range(10):
+        for l in range(len(word) - 1):
+            if (og.index(word[l]) > og.index(word[l + 1])):
+                word[l], word[l + 1] = word[l + 1], word[l]
+                for i in range(len(matrix)):
+                    switch(matrix[i], l, l + 1)
 
-        pl = ADFGVX.transposeDecode(ciphertext, keyword)
+    output = ""
+    for item in matrix:
+        for l in item:
+            output += l
 
-        matrixString = list(matrixString)
-        matrix = [''] * 6
+    return output.replace(":", "")
 
-        for i in range(6):
-            matrix[i] = matrixString[i * 6:i * 6 + 6]
+def switchRow(l, a, b):
+    for i in range(len(l)):
+        switch(l[i], int(a), int(b))
+    return l
 
-        print("ADFGVX matrix:")
-        for item in matrix:
-            print(item)
+def switch(l, a, b):
+    temp = l[a]
+    l[a] = l[b]
+    l[b] = temp
 
-        ctList = [pl[i:i + 2] for i in range(0, len(pl), 2)]
-        ct = ""
+def decode(matrixString, keyword, ciphertext):
 
-        for item in ctList:
-            row = list("ADFGVX").index(list(item)[0])
-            column = list("ADFGVX").index(list(item)[1])
-            # print(item, row, column, matrix[row][column])
-            ct += matrix[row][column]
+    alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+    if (not len(matrixString) == 36):
+        return "ERROR: Matrix not 36 characters"
+    for item in list(alpha):
+        if (not item in matrixString):
+            return "ERROR: Matrix missing letter '" + item + "'"
 
-        return ct
+    ciphertext = prepare_string(ciphertext)
 
-    def toMorseCode(string):
-        string = string.replace(" ", "")
-        morse = ""
-        morseDict = {
-            "A": ".-",
-            "D": "-..",
-            "F": "..-.",
-            "G": "--.",
-            "V": "...-",
-            "X": "-..-"
+    pl = transposeDecode(ciphertext, keyword)
 
-        }
-        for item in list(string):
-            morse += morseDict[item]
-            morse += "/"
-        return morse
+    matrixString = list(matrixString)
+    matrix = [''] * 6
 
-    def unMorseCode(string):
-        if (list(string)[len(string) - 1] == "/"):
-            string = string[:-1]
-        string = string.replace(" ", "").split("/")
-        morse = ""
-        morseDict = {
-            ".-": "A",
-            "-..": "D",
-            "..-.": "F",
-            "--.": "G",
-            "...-": "V",
-            "-..-": "X"
+    for i in range(6):
+        matrix[i] = matrixString[i * 6:i * 6 + 6]
 
-        }
-        count = 0
-        for item in string:
-            morse += morseDict[item]
-            if (count % 2 == 1):
-                morse += " "
-            count += 1
-        return morse
+    print("ADFGVX matrix:")
+    for item in matrix:
+        print(item)
+
+    ctList = [pl[i:i + 2] for i in range(0, len(pl), 2)]
+    ct = ""
+
+    for item in ctList:
+        row = list("ADFGVX").index(list(item)[0])
+        column = list("ADFGVX").index(list(item)[1])
+        # print(item, row, column, matrix[row][column])
+        ct += matrix[row][column]
+
+    return ct
+
+def toMorseCode(string):
+    string = string.replace(" ", "")
+    morse = ""
+    morseDict = {
+        "A": ".-",
+        "D": "-..",
+        "F": "..-.",
+        "G": "--.",
+        "V": "...-",
+        "X": "-..-"
+
+    }
+    for item in list(string):
+        morse += morseDict[item]
+        morse += "/"
+    return morse
+
+def unMorseCode(string):
+    if (list(string)[len(string) - 1] == "/"):
+        string = string[:-1]
+    string = string.replace(" ", "").split("/")
+    morse = ""
+    morseDict = {
+        ".-": "A",
+        "-..": "D",
+        "..-.": "F",
+        "--.": "G",
+        "...-": "V",
+        "-..-": "X"
+
+    }
+    count = 0
+    for item in string:
+        morse += morseDict[item]
+        if (count % 2 == 1):
+            morse += " "
+        count += 1
+    return morse
