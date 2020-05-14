@@ -11,3 +11,5 @@ import SubCipher
 
 if __name__ == "__main__":
     print(Transposition.decode("Wm Coreetr al hylrctepiyoo tb!", 5))
+    print(Hill.encode("WHATS UP DUDE", "13 4 1 3"))
+    print(Hill.decode("CRYFWPINZIMD", "13 4 1 3"))
