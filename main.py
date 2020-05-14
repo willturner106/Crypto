@@ -11,4 +11,3 @@ from Crypto import ADFGVX
 
 if __name__ == "__main__":
     print(Transposition.decode("Wm Coreetr al hylrctepiyoo tb!", 5))
-    print(ADFGVX.prepare_string("Hello There"))
