@@ -1,8 +1,5 @@
 # Will Turner 2020
 
-ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_,."
-mod = len(ALPHABET)
-
 
 def getKeyMatrix(key):
     keyMatrix = [[0] * 2 for i in range(2)]
@@ -15,7 +12,8 @@ def getKeyMatrix(key):
     return keyMatrix
 
 
-def inverseKey(key):
+def inverseKey(key, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    mod = len(alpha)
     k = getKeyMatrix(key)
     d = ((k[0][0] * k[1][1]) - (k[0][1] * k[1][0]))
     d = mod_inverse(d, mod)
@@ -27,6 +25,8 @@ def inverseKey(key):
 
     return invMatrix
 
+########################################################################################################################
+
 
 def mod_inverse(a, m):
     for i in range(m):
@@ -35,8 +35,8 @@ def mod_inverse(a, m):
 
 
 # Following function encrypts the message
-def encode(messageMatrix, key):
-    keyMatrix = getKeyMatrix(key)
+def vencode(messageMatrix, keyMatrix, alpha):
+    mod = len(alpha)
     cipherMatrix = [0] * (len(messageMatrix))
     for i in range(len(cipherMatrix)):
         cipherMatrix[i] = [0] * 2
@@ -48,11 +48,16 @@ def encode(messageMatrix, key):
             cipherMatrix[i][j] = cipherMatrix[i][j] % mod
     return cipherMatrix
 
-def decode(messageMatrix, key):
-    return encode(messageMatrix, inverseKey(key))
+
+def decode(cipher, key, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    return HillCipher(cipher, inverseKey(key, alpha), alpha)
 
 
-def HillCipher(message, keyMatrix, alpha):
+def encode(plain, key, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    return HillCipher(plain, getKeyMatrix(key), alpha)
+
+
+def HillCipher(message, keyMatrix, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
     # Get key matrix from the key string
 
     # Generate vector for the message
@@ -67,7 +72,7 @@ def HillCipher(message, keyMatrix, alpha):
 
     # Following function generates
     # the encrypted vector
-    cipherMatrix = encode(messageVector, keyMatrix)
+    cipherMatrix = vencode(messageVector, keyMatrix, alpha)
 
     # Generate the encrypted text
     # from the encrypted vector
@@ -80,7 +85,8 @@ def HillCipher(message, keyMatrix, alpha):
     return "".join(CipherText)
 
 
-def crib(message, crib):
+def crib(message, crib, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    mod = len(alpha)
     for i in range(mod):
         print(round(i / mod * 100, 2), "%")
         # printProgressBar(i,mod)
@@ -88,7 +94,7 @@ def crib(message, crib):
             for m in range(mod):
                 for n in range(mod):
                     keyMatrix = [[i, l], [m, n]]
-                    d = HillCipher(message, keyMatrix, ALPHABET)
+                    d = HillCipher(message, keyMatrix, alpha)
                     if (crib in d):
                         print(d, keyMatrix)
 
