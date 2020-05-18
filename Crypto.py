@@ -1,7 +1,7 @@
 #Will Turner 2020
 
 import re
-import random
+import warnings
 
 
 class ADFGVX:
@@ -605,7 +605,117 @@ class ColumnarTransposition:
         l[b] = temp
 
 
-#a = ADFGVX(plain="THISISAMESSAGEOFADIFFERENTLENGTH", keyword="UHKEY", matrixString="8QXEPM9AK6T3VG52HCIDBJZ4RSU1LWO0FYN7" )
-#print(a.encode())
-#print(a.decode())
+class Caesar(Affine):  # Caesar cipher is just an Affine cipher where a=1 and b = shift
+
+    def __init__(self, plain="", cipher="", shift=1, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+        Affine.__init__(self, plain=plain, cipher=cipher, a=1, b=shift, alpha=alpha)
+
+
+class SubCipher:
+
+    plain = ""
+    cipher = ""
+    plainAlpha = ""
+    cipherAlpha = ""
+
+    def __init__(self, plain="", cipher="", plainAlpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ", cipherAlpha=""):
+        self.plain = plain
+        self.cipher = cipher
+        self.plainAlpha = plainAlpha
+        self.cipherAlpha = cipherAlpha
+        if not self.subst_validate(plainAlpha, cipherAlpha):
+            print("Alphabets do not match")
+
+    def subst_validate(self, alpha1, alpha2):
+        if not len(alpha1) == len(alpha2):
+            warnings.warn("Alphabet lengths do not match")
+            return False
+        for i in alpha1:
+            if i not in alpha2:
+                warnings.warn("Alphabets do not contain the same character sets")  # TODO make this warning clearer
+                return False
+        return True
+
+    def encode(self):
+
+        s = list(self.plain)
+
+        a1 = list(self.plainAlpha)
+        a2 = list(self.cipherAlpha)
+
+        for i in range(len(s)):
+            if s[i].upper() in a2:
+                if s[i].isupper():
+                    s[i] = a2[a1.index(s[i])]
+                else:
+                    s[i] = a2[a1.index(s[i].upper())].lower()
+
+        self.cipher = "".join(s)
+        return "".join(s)
+
+    def decode(self):
+        s = list(self.cipher)
+
+        a1 = list(self.plainAlpha)
+        a2 = list(self.cipherAlpha)
+
+        for i in range(len(s)):
+            if s[i].upper() in a2:
+                if s[i].isupper():
+                    s[i] = a1[a2.index(s[i])]
+                else:
+                    s[i] = a1[a2.index(s[i].upper())].lower()
+
+        self.plain = "".join(s)
+        return "".join(s)
+
+
+class Vigenere:
+
+    alpha = ""
+    plain = ""
+    cipher = ""
+    keyword = ""
+
+    def __init__(self, plain="", cipher="", keyword="", alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+        self.plain = plain
+        self.cipher = cipher
+        self.keyword = keyword
+        self.alpha = alpha
+
+    def encode(self):
+
+        keyword = self.keyword
+        alpha = self.alpha
+
+        cipher = ""
+        k = list(keyword)
+        count = 0
+
+        for item in list(self.plain):
+            cipher += alpha[(alpha.find(item) + alpha.find(k[count])) % 26]
+            count += 1
+            if count >= len(keyword):
+                count = 0
+
+        self.cipher = cipher
+        return cipher
+
+    def decode(self):
+
+        keyword = self.keyword
+        alpha = self.alpha
+
+        cipher = ""
+        k = list(keyword)
+        count = 0
+
+        for item in list(self.cipher):
+            cipher += alpha[(alpha.find(item) - alpha.find(k[count])) % 26]
+            count += 1
+            if (count >= len(keyword)):
+                count = 0
+
+        self.plain = cipher
+        return cipher
 
