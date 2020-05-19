@@ -2,6 +2,7 @@
 
 import re
 import warnings
+import math
 
 
 class ADFGVX:
@@ -22,6 +23,8 @@ class ADFGVX:
                 self.matrix[i] = matrixString[i * 6:i * 6 + 6]
         else:
             self.matrix = matrix
+        #if self.plain != "":
+            #self.prepare
 
     def encode(self):  #  , matrixString, keyword, plaintext):
         matrix = self.matrix
@@ -29,37 +32,10 @@ class ADFGVX:
         plaintext = self.plain
         p = plaintext
 
-        """
-        ran = input("Random matrix? (y/n)")
-        if (ran == "y" or ran == "Y"):
-            matrixString = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
-            random.shuffle(matrixString)
-            matrixString = "".join(matrixString)
-        """
-
         alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-        """
-        if (not len(matrixString) == 36):
-            return "ERROR: Matrix not 36 characters"
-        for item in list(alpha):
-            if (not item in matrixString):
-                return "ERROR: Matrix missing letter '" + item + "'"
-
-
-        p = ADFGVX.prepare_string(plaintext)
-        matrixString = list(matrixString)
-        ct = ""
-        matrix = [''] * 6
-
-        for i in range(6):
-            matrix[i] = matrixString[i * 6:i * 6 + 6]
-        """
         ct = ""
 
-        #print("ADFGVX matrix:")
-        #for item in matrix:
-            #print(item)
-
+        #Substitution
         for item in list(p):
             for i in range(len(matrix)):
                 if item in matrix[i]:
@@ -68,14 +44,11 @@ class ADFGVX:
             ct += list("ADFGVX")[row]
             ct += list("ADFGVX")[column]
 
-        # print("Transposing")
-        ct = self.transposeEncode(ct, keyword)
+        # Transpose
+        t = ColumnarTransposition(plain=ct, keyword=keyword)
+        ct = t.encode()
         ctList = [ct[i:i + 2] for i in range(0, len(ct), 2)]
-
-        ct = ""
-        for i in ctList:
-            ct += i
-            ct += " "
+        ct = " ".join(ctList)
 
         #print("Done Encoding")
         self.cipher = ct
@@ -85,92 +58,6 @@ class ADFGVX:
         s = re.sub(r'[^\w\s]', "", s)
         s = re.sub(re.compile(r'\s+'), '', s)
         return s.upper()
-
-    def transposeEncode(self, string, keyword):
-        #print(string)
-        ct = ""
-        numColumns = len(keyword)
-        numColumns = len(string) // len(keyword)
-        numRows = len(string) // numColumns
-        numRows = len(keyword)
-        if (not len(string) % numRows == 0):
-            numColumns += 1
-
-        matrix = [''] * numColumns
-        for i in range(len(matrix)):
-            matrix[i] = [''] * numRows
-        row = 0
-        col = 0
-        for item in list(string):
-            matrix[row][col] = item
-            col += 1
-            if (col >= numRows):
-                col = 0
-                row += 1
-        #for item in matrix:
-            #print(item)
-        ak = list(keyword)
-        ak.sort()
-
-        for item in ak:
-            num = list(keyword).index(item)
-            for i in range(len(matrix)):
-                ct += "".join(matrix[i][num])
-
-        # print("Transposition matrix:")
-        # for item in matrix:
-        #  print (item)
-
-        return ct
-
-    def transposeDecode(self, cipher, word):
-        key = len(word)
-
-        numBlanks = len(word) - (len(cipher) % len(word))
-
-        leng = len(cipher)
-        matrix = [] * key
-        for i in range(leng // key + 1):
-            matrix.append([''] * key)
-
-        sWord = list(word)
-        sWord.sort()
-        for i in range(numBlanks):
-            matrix[len(matrix) - 1][word.index(sWord[len(sWord) - i - 1])] = ":"
-
-        cipherList = list(cipher)
-
-        count = 0
-        #print(cipher)
-        for i in range(key):
-            for l in range(leng // key + 1):
-                if (matrix[l][i] != ":"):
-                    matrix[l][i] = cipherList[count]
-                    count += 1
-        #for item in matrix:
-            #print(item)
-
-        word = list(word)
-        og = list(word)
-        for i in range(10):
-            for l in range(len(word) - 1):
-                if (word[l] > word[l + 1]):
-                    word[l], word[l + 1] = word[l + 1], word[l]
-
-        word = list(word)
-        for i in range(10):
-            for l in range(len(word) - 1):
-                if (og.index(word[l]) > og.index(word[l + 1])):
-                    word[l], word[l + 1] = word[l + 1], word[l]
-                    for i in range(len(matrix)):
-                        ADFGVX.switch(matrix[i], l, l + 1)
-
-        output = ""
-        for item in matrix:
-            for l in item:
-                output += l
-        #print(output)
-        return output.replace(":", "")
 
     def switchRow(l, a, b):
         for i in range(len(l)):
@@ -189,33 +76,17 @@ class ADFGVX:
         ciphertext = self.cipher
 
         alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-        """
-        if (not len(matrixString) == 36):
-            return "ERROR: Matrix not 36 characters"
-        for item in list(alpha):
-            if (not item in matrixString):
-                return "ERROR: Matrix missing letter '" + item + "'"
-
-        ciphertext = ADFGVX.prepare_string(ciphertext)
-        """
 
         ciphertext = ciphertext.replace(" ","")
-        pl = self.transposeDecode(ciphertext, keyword)
+        t = ColumnarTransposition(cipher=ciphertext,keyword=keyword)
+        pl = t.decode()
 
-        """
-        matrixString = list(matrixString)
-        matrix = [''] * 6
-
-        for i in range(6):
-            matrix[i] = matrixString[i * 6:i * 6 + 6]
-        """
 
         #print("ADFGVX matrix:")
         #for item in matrix:
             #print(item)
 
         ctList = [pl[i:i + 2] for i in range(0, len(pl), 2)]
-        #print(pl,ctList)
         ct = ""
 
         for item in ctList:
@@ -466,10 +337,15 @@ class ColumnarTransposition:
     cipher = ""
     key = ""
 
-    def __init__(self, plain="", cipher="", key=""):
+    def __init__(self, plain="", cipher="", key="", keyword=""):
         self.plain = plain
         self.cipher = cipher
         self.key = key
+        self.keyword = self.checkKeyword(keyword)
+        print(self.keyword)
+
+    def checkKeyword(self, keyword):
+        return "".join(dict.fromkeys(keyword))
 
     def decode(self):  # , cipher, key):
         """
@@ -479,7 +355,9 @@ class ColumnarTransposition:
         :param int key: The number of columns used to encode
         :return: The decoded string
         """
-        return self.decryptTranspose(self.cipher, self.key)
+        if(self.key != ""):
+            return self.decryptTranspose(self.cipher, self.key)
+        return self.keyWord(self.cipher, self.keyword)
 
     def encode(self):  # plain, key):
         """
@@ -489,7 +367,9 @@ class ColumnarTransposition:
         :param int key: The number of columns used to encode
         :return: The encoded string
         """
-        return self.transpose(self.plain, self.key)
+        if(self.key != ""):
+            return self.transpose(self.plain, self.key)
+        return self.encodeWithKeyword(self.plain, self.keyword)
 
     def transpose(self, plain, key):
         ciphertext = [''] * key
@@ -498,6 +378,7 @@ class ColumnarTransposition:
             while pointer < len(plain):
                 ciphertext[col] += plain[pointer]
                 pointer += key
+        print(ciphertext)
         self.cipher = ''.join(ciphertext)
         return ''.join(ciphertext)
 
@@ -535,22 +416,47 @@ class ColumnarTransposition:
         self.plain = output
         return output
 
+    def encodeWithKeyword(self, plain, word):
+        key = len(word)
+        ciphertext = [''] * key
+        for col in range(key):
+            pointer = col
+            while pointer < len(plain):
+                ciphertext[col] += plain[pointer]
+                pointer += key
+
+        ret = ""
+        store = word
+        word = list(word)
+        word.sort()
+        for item in word:
+            num = store.find(item)
+            ret += ciphertext[num]
+
+
+        self.cipher =ret
+        return ret
+
     def keyWord(self, cipher, word):
         """Decrypts with a keyword"""
-
         key = len(word)
-        if (not len(cipher) % key == 0):
-            if (key - (len(cipher) % key) == 1):
-                cipher += 'X'
-            else:
-                num = key - (len(cipher) % key)
-                for i in range(num):
-                    temp = list(cipher)
-                    p = len(cipher) - (((len(cipher) // key) + 1) * i)
-                    temp = temp[0:p] + ['X'] + temp[p:]
-                    cipher = ''.join(temp)
-            # print(cipher)
 
+        #Add ~ to make the length right
+        if (not len(cipher) % key == 0):
+            num = key - (len(cipher) % key)
+            w = list(word)
+            w.sort()
+            xspots = []
+            for i in range(num):
+                xspots.append(w.index(word[len(word)-i-1]))
+            xspots.sort()
+            for xPos in xspots:
+                temp = list(cipher)
+                p = (math.ceil(len(cipher) / key) * xPos) + math.ceil(len(cipher) / key)
+                temp = temp[0:p-1] + ['~'] + temp[p-1:]
+                cipher = ''.join(temp)
+
+        #Create matrix
         leng = len(cipher)
         matrix = [] * key
         for i in range(leng // key):
@@ -559,21 +465,16 @@ class ColumnarTransposition:
 
         count = 0
 
+        #add to matrix
         for i in range(key):
             for l in range(leng // key):
                 matrix[l][i] = cipherList[count]
                 count += 1
-        # print(list(word))
-        # for item in matrix:
-        # print(item)
 
         word = list(word)
         og = list(word)
         # print("\n")
-        for i in range(10):
-            for l in range(len(word) - 1):
-                if (word[l] > word[l + 1]):
-                    word[l], word[l + 1] = word[l + 1], word[l]
+        word.sort()
         # print(word)
 
         word = list(word)
@@ -585,14 +486,13 @@ class ColumnarTransposition:
                     for i in range(len(matrix)):
                         self.switch(matrix[i], l, l + 1)
 
-        # print(word)
         output = ""
         for item in matrix:
-            # print(item)
             for l in item:
                 output += l
 
-        return output
+        self.plain = output.replace("~","")
+        return output.replace("~","")
 
     def switchRow(self, l, a, b):
         for i in range(len(l)):
@@ -718,4 +618,3 @@ class Vigenere:
 
         self.plain = cipher
         return cipher
-
