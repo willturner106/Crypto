@@ -1,2 +1,14 @@
+# Ignore everything
+/*
+
+# Ignore compiled python
 *.pyc
+
+# Ignore PyCharm environment files
 **/venv
+
+# Unignore the main file
+!Crypto.py
+
+# Unignore the word lists
+!**/WordLists
