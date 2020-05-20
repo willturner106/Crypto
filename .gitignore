@@ -1,0 +1,13 @@
+# Ignore everything
+/*
+
+# Unignore main files
+!Crypto.py
+!CrackingTools.py
+
+# Unignore the word lists
+!**/WordLists
+
+# Unignore readme
+!readme.md
+!.gitignore
