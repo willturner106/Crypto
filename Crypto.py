@@ -165,11 +165,11 @@ class Hill:
         self.mod = len(self.alpha)
         if(keyMatrix != ""):
             self.keyMatrix = keyMatrix
-        else:
+        elif key != "":
             self.keyMatrix = self.getKeyMatrix(key)
         if(invMatrix != ""):
             self.invMatrix = invMatrix
-        else:
+        elif key != "":
             self.invMatrix = self.inverseKey(key)
 
 
