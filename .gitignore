@@ -8,6 +8,9 @@
 # Unignore the word lists
 !**/WordLists
 
-# Unignore readme
+# Unignore readme and docs
 !readme.md
+**/docs
+
+
 !.gitignore

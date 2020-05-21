@@ -8,6 +8,7 @@ This is hopefully going to become a well documented crypto library. Right now it
 2. Substitution
 3. Vignere
 4. Playfair
+5. Morse Code
 ##### Transposition Ciphers
 4. Columnar Transposition
 ##### Mathematical Ciphers
@@ -17,6 +18,9 @@ This is hopefully going to become a well documented crypto library. Right now it
 7. ADFGVX (Substitution + Transposition)
 
 ## Use
+
+*Check out the docs for comprehensive guides.*
+
 All ciphers can be imported from Crypto.py. For example:
 > from Crypto import Affine
 

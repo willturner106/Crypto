@@ -1,6 +1,5 @@
 from Crypto import *
 from math import gcd
-from langdetect import detect
 
 commonWords = open('WordLists/common.txt', 'r').readlines()
 commonWords = [commonWords[x][0:len(commonWords[x]) - 1].replace(" ", "").upper() for x in range(len(commonWords) - 1)]

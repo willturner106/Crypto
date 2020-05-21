@@ -254,6 +254,51 @@ class Hill:
         return "".join(CipherText)
 
 
+class Morse:
+
+    plain = ""
+    cipher = ""
+    mdict = {
+        'A': '.-',     'B': '-...',   'C': '-.-.',
+        'D': '-..',    'E': '.',      'F': '..-.',
+        'G': '--.',    'H': '....',   'I': '..',
+        'J': '.---',   'K': '-.-',    'L': '.-..',
+        'M': '--',     'N': '-.',     'O': '---',
+        'P': '.--.',   'Q': '--.-',   'R': '.-.',
+        'S': '...',    'T': '-',      'U': '..-',
+        'V': '...-',   'W': '.--',    'X': '-..-',
+        'Y': '-.--',   'Z': '--..',
+
+        '0': '-----',  '1': '.----',  '2': '..---',
+        '3': '...--',  '4': '....-',  '5': '.....',
+        '6': '-....',  '7': '--...',  '8': '---..',
+        '9': '----.'
+    }
+
+    def __init__(self, plain="", cipher=""):
+        self.plain = plain
+        self.cipher = cipher
+
+    def encode(self):
+        ret = ""
+        for i in self.plain:
+            if i in self.mdict.keys():
+                ret += self.mdict[i] + " "
+            elif i.swapcase() in self.mdict.keys():
+                ret += self.mdict[i.swapcase()] + " "
+        self.cipher = ret
+        return ret
+
+    def decode(self):
+        ret = ""
+        inv_map = {v: k for k, v in self.mdict.items()}
+        for i in self.cipher.split(" "):
+            if i in inv_map.keys():
+                ret += inv_map[i]
+        self.cipher = ret
+        return ret
+
+
 class Playfair:
 
     plain = ""
