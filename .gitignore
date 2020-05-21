@@ -10,7 +10,7 @@
 
 # Unignore readme and docs
 !readme.md
-**/docs
+!**/docs
 
 
 !.gitignore
