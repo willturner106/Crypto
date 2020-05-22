@@ -9,8 +9,10 @@ This is hopefully going to become a well documented crypto library. Right now it
 3. Vignere
 4. Playfair
 5. Morse Code
+6. Atbash
 ##### Transposition Ciphers
-4. Columnar Transposition
+7. Columnar Transposition
+8. Rail Fence
 ##### Mathematical Ciphers
 5. Affine (Modular Arithmetic)
 6. Hill (Matrix Multiplication)

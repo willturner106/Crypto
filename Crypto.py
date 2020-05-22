@@ -149,6 +149,13 @@ class Affine:
         return plain
 
 
+class Atbash(Affine):
+
+    # Atbash is Affine where a = b = (m-1)
+    def __init__(self, plain="", cipher="", alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+        Affine.__init__(self, plain=plain, cipher=cipher, a=(len(alpha)-1), b=(len(alpha)-1), alpha=alpha)
+
+
 class Hill:
 
     keyMatrix = ""
@@ -374,6 +381,56 @@ class Playfair:
             for l in range(len(grid[i])):
                 if (grid[i][l] == letter):
                     return (i, l)
+
+
+class RailFence:
+
+    cipher = ""
+    plain = ""
+    rows = 3
+
+    def __init__(self, plain="", cipher="", rows=3, removeSpaces=True, capitalize=True):
+        self.cipher = cipher
+        self.plain = plain
+        self.rows = rows
+        if removeSpaces:
+            self.plain = self.plain.replace(" ","")
+            self.cipher = self.cipher.replace(" ","")
+        if capitalize:
+            self.plain = self.plain.upper()
+            self.cipher = self.cipher.upper()
+
+    def encode(self):
+        plain_text = self.plain
+        # divide plain text into layers number of strings
+        rail = [""] * self.rows
+        layer = 0
+        adding = True
+        for character in plain_text:
+            rail[layer] += character
+            if layer >= self.rows - 1 or not adding:
+                layer -= 1
+                adding = False
+                if layer == 0:
+                    adding = True
+            else:
+                layer += 1
+
+        cipher = "".join(rail)
+        self.cipher = cipher
+        return cipher
+
+    def decode(self):
+        numrails = self.rows
+        text = self.cipher
+        rng = range(len(text))
+        fence = [[None] * len(rng) for n in range(numrails)]
+        rails = list(range(numrails - 1)) + list(range(numrails - 1, 0, -1))
+        for n, x in enumerate(rng):
+            fence[rails[n % len(rails)]][n] = x
+        pos = [c for rail in fence for c in rail if c is not None]
+        self.plain = ''.join(text[pos.index(n)] for n in rng)
+        return ''.join(text[pos.index(n)] for n in rng)
 
 
 class ColumnarTransposition:
@@ -663,3 +720,7 @@ class Vigenere:
 
         self.plain = cipher
         return cipher
+
+r = RailFence(plain="gotta test with multiple rail lengths", rows=7)
+print(r.encode())
+print(r.decode())
