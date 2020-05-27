@@ -23,8 +23,31 @@ class ADFGVX:
                 self.matrix[i] = matrixString[i * 6:i * 6 + 6]
         else:
             self.matrix = matrix
-        #if self.plain != "":
-            #self.prepare
+        if self.plain != "":
+            self.plain = self.cleanInput(self.plain)
+
+
+    def cleanInput(self, string):
+        string = list(string)
+        for s in range(len(string)):
+            try:
+                temp = True
+                swap = False
+                for item in self.matrix:
+                    if(string[s] in item or string[s].swapcase() in item):
+                        temp = False
+                    if(string[s].swapcase() in item):
+                        swap = True
+                if(temp):
+                    del string[s]
+                if(swap):
+                    string[s] = string[s].swapcase()
+            except:
+                pass
+        return "".join(string)
+
+
+
 
     def encode(self):  #  , matrixString, keyword, plaintext):
         matrix = self.matrix
@@ -58,16 +81,6 @@ class ADFGVX:
         s = re.sub(r'[^\w\s]', "", s)
         s = re.sub(re.compile(r'\s+'), '', s)
         return s.upper()
-
-    def switchRow(l, a, b):
-        for i in range(len(l)):
-            ADFGVX.switch(l[i], int(a), int(b))
-        return l
-
-    def switch(l, a, b):
-        temp = l[a]
-        l[a] = l[b]
-        l[b] = temp
 
     def decode(self):#matrixString, keyword, ciphertext):
 
@@ -155,6 +168,15 @@ class Atbash(Affine):
     def __init__(self, plain="", cipher="", alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
         Affine.__init__(self, plain=plain, cipher=cipher, a=(len(alpha)-1), b=(len(alpha)-1), alpha=alpha)
 
+    @staticmethod
+    def atbash_encode(string, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        a = Atbash(plain=string, alpha=alpha)
+        return a.encode()
+
+    @staticmethod
+    def atbash_decode(string, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        a = Atbash(cipher=string, alpha=alpha)
+        return a.decode()
 
 class Hill:
 
@@ -305,6 +327,16 @@ class Morse:
         self.cipher = ret
         return ret
 
+    @staticmethod
+    def morse_encode(string):
+        m = Morse(plain=string)
+        return m.encode()
+
+    @staticmethod
+    def morse_decode(string):
+        m = Morse(cipher=string)
+        return m.decode()
+
 
 class Playfair:
 
@@ -444,7 +476,7 @@ class ColumnarTransposition:
         self.cipher = cipher
         self.key = key
         self.keyword = self.checkKeyword(keyword)
-        print(self.keyword)
+        #print(self.keyword)
 
     def checkKeyword(self, keyword):
         return "".join(dict.fromkeys(keyword))
@@ -721,6 +753,4 @@ class Vigenere:
         self.plain = cipher
         return cipher
 
-r = RailFence(plain="gotta test with multiple rail lengths", rows=7)
-print(r.encode())
-print(r.decode())
+print(Morse.morse_encode("Hello there"))

@@ -11,11 +11,11 @@ Create an Affine object with the your plain or ciphertext, the a and b variables
 
 > a = Affine(plain="", cipher="", a=1, b=1, alpha="ABC")
 
-None of these arguments are required. 
+None of these arguments are required.
 + plain: The plaintext to be encoded. Leave blank if you are decoding a message
 + cipher: The ciphertext to be decoded. Leave blank if you are encoding a message
 + a: The multiplier to be used for encoding. Must be co-prime with the length of the alphabet
-+ b: The number to be added when encoding. 
++ b: The number to be added when encoding.
 + alpha: The alphabet to be used. Leave blank for 26 character english alphabet.
 <br>
 
@@ -30,11 +30,11 @@ or
 
 ___
 
-Note: encode() also stores the enciphered text in the classe's cipher variable. It can be retreived later with
+Note: encode() also stores the enciphered text in the class's cipher variable. It can be retrieved later with
 
 > foo = a.cipher
 
-decode() stores the decoded text in the plain variable. It can be retreived with
+decode() stores the decoded text in the plain variable. It can be retrieved with
 > foo = a.plain
 
 This means it is possible to call encode and decode successively, even if cipher or plain were not set originally.
@@ -59,7 +59,7 @@ The AffineDecoder class extends Affine. Create a new AffineDecoder and pass in y
 Once again, the alpha argument is optional. The default is the 26 character english alphabet.
 
 
-The last step is to call the spam method. Spam returns a list of possible results. It uses a primitive english language detector to determine which results are likely to be correct. 
+The last step is to call the spam method. Spam returns a list of possible results. It uses a primitive english language detector to determine which results are likely to be correct.
 
 > a.spam(tolerance=4)
 
